@@ -195,14 +195,54 @@ public class Level {
 		//###################################################################################################################################################
 	//Adds gas tiles until the requisite number of squares are filled or there is no more room 
 	private void addGas(int col, int row, Map map, int numSquaresToFill, ArrayList<Gas> placedThisRound) {
+		// 3 1  2
+		// 5 [] 4
+		// 6  8 7
 		Gas g = new Gas (col, row, tileSize, tileset.getImage("gasOne"), this, 3);
 			map.addTile(col, row, g);
-		for(int rowIndex = row-1; rowIndex<row+2; rowIndex++){
-			for(int colIndex = col; colIndex>col-2; colIndex-=2){
-				if (colIndex == col) {
 
+		for(int i = 0; i<numSquaresToFill; i++){
+			//up
+				if(row-1 < map.getTiles()[0].length && !(map.getTiles()[col][row-1] instanceof Gas) && !map.getTiles()[col][row-1].isSolid()){
+					g = new Gas (col, row-1, tileSize, tileset.getImage("gasOne"), this, 3);
+					map.addTile(col, row-1, g);
+						//up and right
+						if(col+1 < map.getTiles().length && !(map.getTiles()[col+1][row] instanceof Gas) && !map.getTiles()[col+1][row].isSolid()){
+							g = new Gas (col+1, row-1, tileSize, tileset.getImage("gasOne"), this, 3);
+							map.addTile(col+1, row-1, g);
+					}
+						//up and left
+						if(col-1 < map.getTiles().length && !(map.getTiles()[col-1][row] instanceof Gas) && !map.getTiles()[col-1][row].isSolid()){
+							g = new Gas (col-1, row-1, tileSize, tileset.getImage("gasOne"), this, 3);
+							map.addTile(col-1, row-1, g);
+					}
 				}
-			}
+
+			//left & right
+				if(col+1 < map.getTiles().length && !(map.getTiles()[col+1][row] instanceof Gas) && !map.getTiles()[col+1][row].isSolid()){
+					g = new Gas (col+1, row, tileSize, tileset.getImage("gasOne"), this, 3);
+					map.addTile(col+1, row, g);
+				}
+				if(col-1 < map.getTiles().length && !(map.getTiles()[col-1][row] instanceof Gas) && !map.getTiles()[col-1][row].isSolid()){
+					g = new Gas (col-1, row, tileSize, tileset.getImage("gasOne"), this, 3);
+					map.addTile(col-1, row, g);
+				}
+
+			//Down
+				if(row+1 < map.getTiles()[0].length && !(map.getTiles()[col][row+1] instanceof Gas) && !map.getTiles()[col][row+1].isSolid()){
+					//down and left
+					if((col-1 < map.getTiles().length && !(map.getTiles()[col-1][row] instanceof Gas) && !map.getTiles()[col-1][row].isSolid()) && (row+1 < map.getTiles()[0].length && !(map.getTiles()[col][row+1] instanceof Gas) && !map.getTiles()[col][row+1].isSolid())){
+						g = new Gas (col-1, row+1, tileSize, tileset.getImage("gasOne"), this, 3);
+						map.addTile(col-1, row+1, g);
+					}
+					//down and right
+					if((col+1 < map.getTiles().length && !(map.getTiles()[col+1][row] instanceof Gas) && !map.getTiles()[col+1][row].isSolid()) && row+1 < map.getTiles()[0].length && !(map.getTiles()[col][row+1] instanceof Gas) && !map.getTiles()[col][row+1].isSolid()){
+							g = new Gas (col+1, row+1, tileSize, tileset.getImage("gasOne"), this, 3);
+							map.addTile(col+1, row+1, g);
+						}
+					g = new Gas (col, row+1, tileSize, tileset.getImage("gasOne"), this, 3);
+					map.addTile(col, row+1, g);
+				}
 		}
 	}
 
@@ -262,6 +302,7 @@ public class Level {
 				}
 				
 			}
+			
 		}
 
 	}
