@@ -15,12 +15,15 @@ public class Player extends PhysicsObject{
 	public float jumpPower = 1350;
 	public boolean touchedGas = false;
 	private boolean isJumping = false;
+	public boolean gotPotion = false;
+	public Color color;
 
 	public Player(float x, float y, Level level) {
 	
 		super(x, y, level.getLevelData().getTileSize(), level.getLevelData().getTileSize(), level);
 		int offset =(int)(level.getLevelData().getTileSize()*0.1); //hitbox is offset by 10% of the player size.
 		this.hitbox = new RectHitbox(this, offset,offset, width -offset, height - offset);
+		color = Color.YELLOW;
 	}
 
 	@Override
@@ -45,7 +48,7 @@ public class Player extends PhysicsObject{
 
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(Color.YELLOW);
+		g.setColor(color);
 		MyGraphics.fillRectWithOutline(g, (int)getX(), (int)getY(), width, height);
 		
 		if(Main.DEBUGGING) {

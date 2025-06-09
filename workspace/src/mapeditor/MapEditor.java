@@ -61,7 +61,7 @@ class MapEditor extends GameBase{
 		Tileset tileset = GameResources.tileset;
 
 		Map<Integer, BufferedImage> images = tileset.getIdImages();
-		PaletteItem[] paletteItems = new PaletteItem[images.size()+1];
+		PaletteItem[] paletteItems = new PaletteItem[images.size()+2];
 		
 		int i = 0;
 		for(Entry<Integer, BufferedImage> entry: images.entrySet()) {
@@ -70,6 +70,10 @@ class MapEditor extends GameBase{
 			i++;
 			if(i==8){
 				paletteItems[8] = new PaletteItem("Enemy", 8, GameResources.enemy);
+				i++;
+			}
+			if(i==22){
+				paletteItems[22] = new PaletteItem("Potion", 22, GameResources.potion);
 				i++;
 			}
 		}

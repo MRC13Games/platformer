@@ -1,5 +1,6 @@
 package gamelogic.level;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import gameengine.loaders.Tileset;
 import gamelogic.GameResources;
 import gamelogic.Main;
 import gamelogic.enemies.Enemy;
+import gamelogic.enemies.Potion;
 import gamelogic.player.Player;
 import gamelogic.tiledMap.Map;
 import gamelogic.tiles.Flag;
@@ -28,6 +30,7 @@ public class Level {
 	private Enemy[] enemies;
 	public static Player player;
 	private Camera camera;
+	private Potion[] potions;
 
 	private boolean active;
 	private boolean playerDead;
@@ -37,6 +40,7 @@ public class Level {
 	private ArrayList<Flower> flowers = new ArrayList<>();
 	private ArrayList<Water> waters = new ArrayList<>();
 	private ArrayList<Gas> gases = new ArrayList<>();
+	private ArrayList<Potion> potionList = new ArrayList<>();
 
 	private List<PlayerDieListener> dieListeners = new ArrayList<>();
 	private List<PlayerWinListener> winListeners = new ArrayList<>();
@@ -47,6 +51,7 @@ public class Level {
 	private int tileSize;
 	private Tileset tileset;
 	private long gasTimer;
+	private long potionTimer;
 	public static float GRAVITY = 70;
 
 
@@ -137,6 +142,9 @@ public class Level {
 					tiles[x][y] = new Water(xPosition, yPosition, tileSize, tileset.getImage("Quarter_water"), this, 1);
 					waters.add((Water)(tiles[x][y]));
 				}
+				else if (values[x][y] == 22){
+					potionList.add(new Potion(xPosition*tileSize, yPosition*tileSize, this));
+				}
 			}
 
 		}
@@ -146,6 +154,12 @@ public class Level {
 		for (int i = 0; i < enemiesList.size(); i++) {
 			enemies[i] = new Enemy(enemiesList.get(i).getX(), enemiesList.get(i).getY(), this);
 		}
+
+		potions = new Potion[potionList.size()];
+		for (int i = 0; i < potionList.size(); i++) {
+			potions[i] = new Potion(potionList.get(i).getX(), potionList.get(i).getY(), this);
+		}
+
 		player = new Player(leveldata.getPlayerX() * map.getTileSize(), leveldata.getPlayerY() * map.getTileSize(),
 				this);
 		camera.setFocusedObject(player);
@@ -195,13 +209,15 @@ public class Level {
 				}
 			}
 
+			
+
 			boolean amTouchingWater = false;
 			for(Water w : waters){
 				if(w.getHitbox().isIntersecting(player.getHitbox())){
 					System.out.println("touching water!");
 					amTouchingWater = true;
 					player.walkSpeed = 200;
-					player.jumpPower = 675;
+					player.jumpPower = 800;
 				}	
 			}
  				if(amTouchingWater == false){
@@ -222,10 +238,15 @@ public class Level {
 			if(!touchGas){
 				player.touchedGas = false;
 				gasTimer = 0;
+				player.color = Color.YELLOW;
 			}
 			else if(System.currentTimeMillis()-gasTimer >= 5000){
 				onPlayerDeath();
 			}
+			else if(System.currentTimeMillis()-gasTimer >= 2500){
+				player.color = Color.RED;
+			}
+
 			
 			// Update the enemies
 			for (int i = 0; i < enemies.length; i++) {
@@ -234,6 +255,30 @@ public class Level {
 					onPlayerDeath();
 				}
 			}
+
+			//Update potions
+			boolean getPotion = false;
+			for (int i = 0; i < potions.length; i++) {
+				potions[i].update(tslf);
+				if (player.getHitbox().isIntersecting(potions[i].getHitbox())) {
+						potionTimer = System.currentTimeMillis();
+						getPotion = true;
+					}
+				}
+			if(System.currentTimeMillis()-potionTimer <= 10000){
+					player.color = Color.BLUE;
+					player.walkSpeed = 200;
+					GRAVITY = 35;
+
+			}
+			else{
+				player.color = Color.YELLOW;
+				getPotion = false;
+				potionTimer = 0;
+				player.walkSpeed = 400;
+				GRAVITY = 70;
+			}
+
 
 			// Update the map
 			map.update(tslf);
@@ -264,6 +309,7 @@ public class Level {
 					map.addTile(col, row-1, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 					if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 						return;
 					}
@@ -274,6 +320,7 @@ public class Level {
 					map.addTile(col+1, row-1, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 					if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 						return;
 					}
@@ -284,6 +331,7 @@ public class Level {
 					map.addTile(col-1, row-1, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 					if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 						return;
 					}
@@ -295,6 +343,7 @@ public class Level {
 					map.addTile(col+1, row, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 						if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 							return;
 						}
@@ -304,6 +353,7 @@ public class Level {
 					map.addTile(col-1, row, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 						if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 							return;
 						}
@@ -315,6 +365,7 @@ public class Level {
 					map.addTile(col, row+1, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 					if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 						return;
 					}
@@ -325,6 +376,7 @@ public class Level {
 					map.addTile(col-1, row+1, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 					if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 						return;
 					}
@@ -335,6 +387,7 @@ public class Level {
 					map.addTile(col+1, row+1, g);
 					numSquaresToFill--;
 					placedThisRound.add(g);
+								gases.add(g);
 					if(placedThisRound.size()<=0 && numSquaresToFill<=0){
 						return;
 					}
@@ -451,6 +504,11 @@ public class Level {
 	   	 // Draw the enemies
 	   	 for (int i = 0; i < enemies.length; i++) {
 	   		 enemies[i].draw(g);
+	   	 }
+
+		 	   	 // Draw the potions
+	   	 for (int i = 0; i < potions.length; i++) {
+	   		 potions[i].draw(g);
 	   	 }
 
 

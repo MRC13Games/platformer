@@ -35,7 +35,7 @@ public class Main extends GameBase implements PlayerDieListener, PlayerWinListen
 
 	public static void main(String[] args) {
 		Main main = new Main();
-		main.start("Eden Jump", SCREEN_WIDTH, SCREEN_HEIGHT);
+		main.start("Eden Jump (UPDATED)", SCREEN_WIDTH, SCREEN_HEIGHT);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class Main extends GameBase implements PlayerDieListener, PlayerWinListen
 
 		levels = new LevelData[2];
 		try {
-			levels[0] = LeveldataLoader.loadLeveldata("/workspaces/platformer/workspace/maps/gasTest1.txt");
+			levels[0] = LeveldataLoader.loadLeveldata("/workspaces/platformer/workspace/maps/jump.txt");
 			levels[1] = LeveldataLoader.loadLeveldata("/workspaces/platformer/workspace/maps/map1.txt");
 		} catch (Exception e) {
 			e.printStackTrace();
